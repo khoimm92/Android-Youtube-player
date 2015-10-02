@@ -21,6 +21,7 @@ import java.util.List;
 public class YoutubeConnector {
     private YouTube youtube;
     private YouTube.Search.List query;
+    List<VideoItem> items;
 
     public YoutubeConnector(Context context) {
         youtube = new YouTube.Builder(new NetHttpTransport(),
@@ -33,7 +34,11 @@ public class YoutubeConnector {
             query = youtube.search().list("id,snippet");
             query.setKey(Config.DEVELOPER_KEY);
             query.setType("video");
-            query.setFields("items(id/videoId,snippet/title,snippet/description,snippet/thumbnails/default/url)");
+            query.setMaxResults((long) 10);
+            if (MainActivity.PAGETOKEN != null)
+                query.setPageToken(MainActivity.PAGETOKEN);
+            query.setFields("items(id/videoId,snippet/title,snippet/description,snippet/thumbnails/default/url),nextPageToken");
+
         }catch(IOException e){
             Log.d("YC", "Could not initialize: " + e);
         }
@@ -44,8 +49,10 @@ public class YoutubeConnector {
         try{
             SearchListResponse response = query.execute();
             List<SearchResult> results = response.getItems();
+            if (items == null)
+                items = new ArrayList<VideoItem>();
+            MainActivity.PAGETOKEN = response.getNextPageToken();
 
-            List<VideoItem> items = new ArrayList<VideoItem>();
             for(SearchResult result:results){
                 VideoItem item = new VideoItem();
                 item.setTitle(result.getSnippet().getTitle());
