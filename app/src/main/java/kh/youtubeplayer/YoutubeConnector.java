@@ -34,7 +34,7 @@ public class YoutubeConnector {
             query = youtube.search().list("id,snippet");
             query.setKey(Config.DEVELOPER_KEY);
             query.setType("video");
-            query.setMaxResults((long) 10);
+            query.setMaxResults((long) 3);
             if (MainActivity.PAGETOKEN != null)
                 query.setPageToken(MainActivity.PAGETOKEN);
             query.setFields("items(id/videoId,snippet/title,snippet/description,snippet/thumbnails/default/url),nextPageToken");

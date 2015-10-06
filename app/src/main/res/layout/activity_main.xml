@@ -5,25 +5,29 @@
     android:orientation="vertical" >
 
     <EditText
-        android:layout_width="316dp"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:id="@+id/txtSearch"
         android:hint="@string/search_hint"
-        android:layout_alignParentTop="true"/>
+        android:layout_alignParentTop="true"
+        android:imeOptions="actionSearch"
+        android:singleLine="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
         <!--android:inputType="textNoSuggestions" -->
 
 
-    <Button
-        android:layout_width="45dp"
-        android:layout_height="wrap_content"
-        android:text="Search"
-        android:id="@+id/button"
-        android:layout_gravity="right"
-        android:layout_alignBottom="@+id/txtSearch"
-        android:layout_toRightOf="@+id/txtSearch"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:onClick="searchVideo" />
+    <!--<Button-->
+        <!--android:layout_width="45dp"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:text="Search"-->
+        <!--android:id="@+id/button"-->
+        <!--android:layout_gravity="right"-->
+        <!--android:layout_alignBottom="@+id/txtSearch"-->
+        <!--android:layout_toRightOf="@+id/txtSearch"-->
+        <!--android:layout_alignParentRight="true"-->
+        <!--android:layout_alignParentEnd="true"-->
+        <!--android:onClick="searchVideo" />-->
 
     <ListView
         android:layout_width="wrap_content"
