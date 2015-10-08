@@ -1,9 +1,12 @@
 package kh.youtubeplayer;
 
+import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
 import com.google.android.youtube.player.YouTubeBaseActivity;
@@ -19,8 +22,27 @@ public class PlayerActivity extends YouTubeBaseActivity implements YouTubePlayer
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_player);
 
-//        YouTubePlayerView youTubePlayerView = (YouTubePlayerView) findViewById(R.id.youtube_player);
-//        youTubePlayerView.initialize(Config.DEVELOPER_KEY, this);
+        YouTubePlayerView youTubePlayerView = (YouTubePlayerView) findViewById(R.id.youtube_player);
+        youTubePlayerView.initialize(Config.DEVELOPER_KEY, this);
+
+        Button shareBtn = (Button)findViewById(R.id.shareBtn);
+
+        shareBtn.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                shareIt();
+            }
+        });
+    }
+
+    private void shareIt() {
+        Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
+        sharingIntent.setType("text/plain");
+
+        sharingIntent.putExtra(android.content.Intent.EXTRA_TITLE, getIntent().getStringExtra("VIDEO_TITLE"));
+        sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, "Watch video here http://youtu.be/" + getIntent().getStringExtra("VIDEO_ID"));
+
+        startActivity(Intent.createChooser(sharingIntent, "Share via"));
+
     }
 
     @Override
