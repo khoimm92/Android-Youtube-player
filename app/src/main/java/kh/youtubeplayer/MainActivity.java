@@ -38,6 +38,7 @@ import com.google.api.services.youtube.YouTube;
 import com.google.api.services.youtube.model.SearchListResponse;
 import com.google.api.services.youtube.model.SearchResult;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.squareup.picasso.Picasso;
 
 import org.apache.http.HttpEntity;
@@ -64,7 +65,7 @@ public class MainActivity extends YouTubeBaseActivity {
     ListView listvideo;
     ArrayAdapter<VideoItem> adapter;
     private List<VideoItem> searchResults;
-    private List<VideoItem> temp_data;
+    private List<VideoItem> temp_data;//temporary save next page data
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,11 +79,11 @@ public class MainActivity extends YouTubeBaseActivity {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                    listvideo.setAdapter(null);
                     searchOnYoutube(input.getText().toString());
 
-                    // Check if no view has focus:
-
-                    InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                    //hide the keyboard
+                    InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                     imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
 
                     return true;
@@ -96,33 +97,22 @@ public class MainActivity extends YouTubeBaseActivity {
             public void onScrollStateChanged(AbsListView view, int scrollState) {
             }
 
-            private int preLast;
-
             @Override
             public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-//                final int lastItem = firstVisibleItem + visibleItemCount;
-//                if(lastItem == totalItemCount - 1) {
-//                    if (PAGETOKEN != null)//determine next page exists
-//                        searchOnYoutube(input.getText().toString());
-//                }
-
                 final int lastItem = firstVisibleItem + visibleItemCount;
                 if (lastItem == totalItemCount) {
-                    if (preLast != lastItem) { //to avoid multiple calls for last item
-                        if (PAGETOKEN != null) {//determine next page exists
-//                            searchOnYoutube(input.getText().toString());
-                            new Thread() {
-                                public void run() {
-                                    YoutubeConnector yc = new YoutubeConnector(MainActivity.this);
-                                    temp_data = yc.search(input.getText().toString());
-                                }
-                            }.start();
-
-                            if (temp_data != null) {
-                                searchResults.addAll(temp_data);
-                                adapter.notifyDataSetChanged();
+//                    System.out.println(PAGETOKEN);
+                    if (PAGETOKEN != null) {//determine next page exists
+                        new Thread() {
+                            public void run() {
+                                YoutubeConnector yc = new YoutubeConnector(MainActivity.this);
+                                temp_data = yc.search(input.getText().toString());
                             }
+                        }.start();
 
+                        if (temp_data != null) {
+                            searchResults.addAll(temp_data);
+                            adapter.notifyDataSetChanged();
                         }
                     }
                 }
@@ -142,8 +132,6 @@ public class MainActivity extends YouTubeBaseActivity {
 
         });
     }
-
-    private String token = "";
 
     private void searchOnYoutube(final String keywords) {
 
@@ -167,35 +155,28 @@ public class MainActivity extends YouTubeBaseActivity {
     }
 
     private void updateVideosFound() {
-//        if (adapter == null) {
-        adapter = new ArrayAdapter<VideoItem>(getApplicationContext(), R.layout.activity_playlist, searchResults) {
-            @Override
-            public View getView(int position, View convertView, ViewGroup parent) {
-                if (convertView == null) {
-                    convertView = getLayoutInflater().inflate(R.layout.activity_playlist, parent, false);
+        if (searchResults.size() > 0 && searchResults != null) {
+            adapter = new ArrayAdapter<VideoItem>(getApplicationContext(), R.layout.activity_playlist, searchResults) {
+                @Override
+                public View getView(int position, View convertView, ViewGroup parent) {
+                    if (convertView == null) {
+                        convertView = getLayoutInflater().inflate(R.layout.activity_playlist, parent, false);
+                    }
+                    ImageView thumbnail = (ImageView) convertView.findViewById(R.id.video_thumbnail);
+                    TextView title = (TextView) convertView.findViewById(R.id.video_title);
+                    TextView description = (TextView) convertView.findViewById(R.id.video_description);
+
+                    VideoItem searchResult = searchResults.get(position);
+
+                    Picasso.with(getApplicationContext()).load(searchResult.getThumbnailURL()).into(thumbnail);
+                    title.setText(searchResult.getTitle());
+                    description.setText(searchResult.getDescription());
+                    return convertView;
                 }
-                ImageView thumbnail = (ImageView) convertView.findViewById(R.id.video_thumbnail);
-                TextView title = (TextView) convertView.findViewById(R.id.video_title);
-                TextView description = (TextView) convertView.findViewById(R.id.video_description);
-
-                VideoItem searchResult = searchResults.get(position);
-
-                Picasso.with(getApplicationContext()).load(searchResult.getThumbnailURL()).into(thumbnail);
-//                try {
-//                    URL thumbUrl = new URL(searchResult.getThumbnailURL());
-//                    Bitmap bmp = BitmapFactory.decodeStream(thumbUrl.openConnection().getInputStream());
-//                    thumbnail.setImageBitmap(bmp);
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                }
-//
-                title.setText(searchResult.getTitle());
-                description.setText(searchResult.getDescription());
-                return convertView;
-            }
-        };
-        listvideo.setAdapter(adapter);
-//        }
+            };
+            listvideo.setAdapter(adapter);
+        } else
+            Toast.makeText(MainActivity.this, "There are no result", Toast.LENGTH_LONG).show();
     }
 
     @Override
