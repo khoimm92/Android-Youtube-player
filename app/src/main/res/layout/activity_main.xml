@@ -31,6 +31,12 @@
 
     </RelativeLayout>
 
+    <!-- Framelayout to display Fragments -->
+    <FrameLayout
+        android:id="@+id/frame_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
     <!-- Listview to display slider menu -->
     <ListView
         android:id="@+id/list_slidermenu"
