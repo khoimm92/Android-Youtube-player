@@ -14,6 +14,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -67,9 +68,10 @@ import java.util.logging.Handler;
 
 import static kh.youtubeplayer.R.drawable.ic_drawer;
 
-public class MainActivity extends YouTubeBaseActivity {
+public class MainActivity extends AppCompatActivity {
     public static String PAGETOKEN;
-    EditText input;
+    private String KEYWORD;
+//    EditText input;
     ListView listvideo;
     ArrayAdapter<VideoItem> adapter;
     private List<VideoItem> searchResults;
@@ -97,25 +99,25 @@ public class MainActivity extends YouTubeBaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        input = (EditText) findViewById(R.id.txtSearch);
+//        input = (EditText) findViewById(R.id.txtSearch);
         listvideo = (ListView) findViewById(R.id.listView);
 
-        input.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-                    listvideo.setAdapter(null);
-                    searchOnYoutube(input.getText().toString());
-
-                    //hide the keyboard
-                    InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-                    imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
-
-                    return true;
-                }
-                return false;
-            }
-        });
+//        input.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+//            @Override
+//            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+//                if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+//                    listvideo.setAdapter(null);
+//                    searchOnYoutube(KEYWORD);
+//
+//                    //hide the keyboard
+//                    InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+//                    imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+//
+//                    return true;
+//                }
+//                return false;
+//            }
+//        });
 
         listvideo.setOnScrollListener(new AbsListView.OnScrollListener() {
             @Override
@@ -131,7 +133,7 @@ public class MainActivity extends YouTubeBaseActivity {
                         new Thread() {
                             public void run() {
                                 YoutubeConnector yc = new YoutubeConnector(MainActivity.this);
-                                temp_data = yc.search(input.getText().toString());
+                                temp_data = yc.search(KEYWORD);
                             }
                         }.start();
 
@@ -194,11 +196,14 @@ public class MainActivity extends YouTubeBaseActivity {
         // setting the nav drawer list adapter
         menu_adapter = new NavDrawerListAdapter(getApplicationContext(),
                 navDrawerItems);
-        mDrawerList.setAdapter(adapter);
+        mDrawerList.setAdapter(menu_adapter);
 
         // enabling action bar app icon and behaving it as toggle button
-        getActionBar().setDisplayHomeAsUpEnabled(true);
-        getActionBar().setHomeButtonEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(true);
+        getSupportActionBar().setIcon(R.drawable.ic_launcher);
+        getSupportActionBar().setLogo(R.drawable.ic_launcher);
+
 
         mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout,
                 ic_drawer, //nav menu toggle icon
@@ -206,13 +211,13 @@ public class MainActivity extends YouTubeBaseActivity {
                 R.string.app_name // nav drawer close - description for accessibility
         ){
             public void onDrawerClosed(View view) {
-                getActionBar().setTitle(mTitle);
+                getSupportActionBar().setTitle(mTitle);
                 // calling onPrepareOptionsMenu() to show action bar icons
                 invalidateOptionsMenu();
             }
 
             public void onDrawerOpened(View drawerView) {
-                getActionBar().setTitle(mDrawerTitle);
+                getSupportActionBar().setTitle(mDrawerTitle);
                 // calling onPrepareOptionsMenu() to hide action bar icons
                 invalidateOptionsMenu();
             }
@@ -272,10 +277,12 @@ public class MainActivity extends YouTubeBaseActivity {
             Toast.makeText(MainActivity.this, "There are no result", Toast.LENGTH_LONG).show();
     }
 
-    @Override
+//    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
+//        MenuItem item = menu.findItem(R.id.action_settings);
+//        item.setVisible(false);
         return true;
     }
 
@@ -287,8 +294,8 @@ public class MainActivity extends YouTubeBaseActivity {
         }
         // Handle action bar actions click
         switch (item.getItemId()) {
-            case R.id.action_settings:
-                return true;
+//            case R.id.action_settings:
+//                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -301,14 +308,14 @@ public class MainActivity extends YouTubeBaseActivity {
     public boolean onPrepareOptionsMenu(Menu menu) {
         // if nav drawer is opened, hide the action items
         boolean drawerOpen = mDrawerLayout.isDrawerOpen(mDrawerList);
-        menu.findItem(R.id.action_settings).setVisible(!drawerOpen);
+//        menu.findItem(R.id.action_settings).setVisible(!drawerOpen);
         return super.onPrepareOptionsMenu(menu);
     }
 
     @Override
     public void setTitle(CharSequence title) {
         mTitle = title;
-        getActionBar().setTitle(mTitle);
+        getSupportActionBar().setTitle(mTitle);
     }
 
     /**
@@ -348,18 +355,15 @@ public class MainActivity extends YouTubeBaseActivity {
      * */
     private void displayView(int position) {
         // update the main content by replacing fragments
-        Fragment fragment = null;
         switch (position) {
             case 0:
-                fragment = new HomeFragment();
+                KEYWORD = "Hoạt Hình";
                 break;
             case 1:
-                Toast.makeText(MainActivity.this, "1", Toast.LENGTH_SHORT).show();
-//                fragment = new FindPeopleFragment();
+                KEYWORD = "Quảng Cáo";
                 break;
             case 2:
-//                fragment = new PhotosFragment();
-                Toast.makeText(MainActivity.this, "2", Toast.LENGTH_SHORT).show();
+                KEYWORD = "Bong da";
                 break;
             case 3:
                 Toast.makeText(MainActivity.this, "3", Toast.LENGTH_SHORT).show();
@@ -375,11 +379,13 @@ public class MainActivity extends YouTubeBaseActivity {
                 break;
         }
 
-        if (fragment != null) {
-            FragmentManager fragmentManager = getFragmentManager();
-            fragmentManager.beginTransaction()
-                    .replace(R.id.frame_container, fragment).commit();
+        if (KEYWORD != null) {
+//            FragmentManager fragmentManager = getFragmentManager();
+//            fragmentManager.beginTransaction()
+//                    .replace(R.id.frame_container, fragment).commit();
 
+//            listvideo.setAdapter(null);
+            searchOnYoutube(KEYWORD);
             // update selected item and title, then close the drawer
             mDrawerList.setItemChecked(position, true);
             mDrawerList.setSelection(position);
