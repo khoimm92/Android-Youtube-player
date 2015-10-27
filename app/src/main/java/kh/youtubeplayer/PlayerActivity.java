@@ -58,6 +58,7 @@ public class PlayerActivity extends YouTubeBaseActivity implements YouTubePlayer
         /** add listeners to YouTubePlayer instance **/
         youTubePlayer.setPlayerStateChangeListener(playerStateChangeListener);
         youTubePlayer.setPlaybackEventListener(playbackEventListener);
+        int a = Integer.parseInt(getIntent().getStringExtra("VIDEO_POS"));
         if (!b) {
             youTubePlayer.cueVideo(getIntent().getStringExtra("VIDEO_ID"));
         }

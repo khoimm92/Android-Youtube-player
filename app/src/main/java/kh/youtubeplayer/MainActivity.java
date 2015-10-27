@@ -152,7 +152,8 @@ public class MainActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> av, View v, int pos, long id) {
                 Intent intent = new Intent(getApplicationContext(), PlayerActivity.class);
                 System.out.println(searchResults.get(pos).getId());
-                intent.putExtra("VIDEO_ID", searchResults.get(pos).getId());
+                intent.putExtra("PLAYLIST_ID", KEYWORD);
+                intent.putExtra("VIDEO_ID", KEYWORD);
                 intent.putExtra("VIDEO_TITLE", searchResults.get(pos).getTitle());
                 startActivity(intent);
             }
@@ -204,7 +205,6 @@ public class MainActivity extends AppCompatActivity {
         getSupportActionBar().setIcon(R.drawable.ic_launcher);
         getSupportActionBar().setLogo(R.drawable.ic_launcher);
 
-
         mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout,
                 ic_drawer, //nav menu toggle icon
                 R.string.app_name, // nav drawer open - description for accessibility
@@ -253,6 +253,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void updateVideosFound() {
+        System.out.println(searchResults);
         if (searchResults.size() > 0 && searchResults != null) {
             adapter = new ArrayAdapter<VideoItem>(getApplicationContext(), R.layout.activity_playlist, searchResults) {
                 @Override
@@ -357,13 +358,13 @@ public class MainActivity extends AppCompatActivity {
         // update the main content by replacing fragments
         switch (position) {
             case 0:
-                KEYWORD = "Hoạt Hình";
+                KEYWORD = "PLoD7tskvdrXmQQDn1CZD4ROqzhH9Pla8z";
                 break;
             case 1:
-                KEYWORD = "Quảng Cáo";
+                KEYWORD = "PLLp93zkyD1A1Czv8XxfDVTm8Vgu1icwiI";
                 break;
             case 2:
-                KEYWORD = "Bong da";
+                KEYWORD = "PLLp93zkyD1A35F514QAW1BDOdczxYMF4x";
                 break;
             case 3:
                 Toast.makeText(MainActivity.this, "3", Toast.LENGTH_SHORT).show();
